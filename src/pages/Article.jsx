@@ -60,8 +60,7 @@ const ArticlePage = () => {
         getArticleParagraphs(articleId).then((res) => {
             setParagraphList(res.data.result);
         });
-
-    },[]);
+    }, []);
     return (
         <Card style={{height: '100%', margin: '10px', overflow: 'scroll'}} >
             <Row>

@@ -4,6 +4,12 @@ import AboutPage from "./pages/About.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ContactPage from "./pages/Contact.jsx";
 import ArticlePage from "./pages/Article.jsx";
+import AdminLayout from "./layouts/AdminLayout.jsx";
+import ArticleManage from "./pages/ArticleManage.jsx";
+import CategoryManage from "./pages/CategoryManage.jsx";
+import TagManage from "./pages/TagManage.jsx";
+import AttachmentManage from "./pages/AttachmentManage.jsx";
+import ArticleEdit from "./pages/ArticleEdit.jsx";
 
 const App = () => {
     return (
@@ -14,6 +20,13 @@ const App = () => {
                     <Route path="/about" element={<AboutPage/>} ></Route>
                     <Route path="/contact" element={<ContactPage/>}></Route>
                     <Route path="/article/:id" element={<ArticlePage/>}></Route>
+                </Route>
+                <Route path="/admin" element={<AdminLayout/>}>
+                    <Route path="/admin/article" element={<ArticleManage/>}></Route>
+                    <Route path="/admin/category" element={<CategoryManage/>}></Route>
+                    <Route path="/admin/tag" element={<TagManage/>}></Route>
+                    <Route path="/admin/attachment" element={<AttachmentManage/>}></Route>
+                    <Route path="/admin/article_edit/:id" element={<ArticleEdit />}></Route>
                 </Route>
 
             </Routes>
