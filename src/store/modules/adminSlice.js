@@ -1,16 +1,19 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import {
     getArticles,
     getAllCategories,
     getAllTags,
     getChangeLogs,
     getArticleInfo,
-    getArticleParagraphs
+    getArticleParagraphs,
+    getImgList,
+    getUserInfo,
 } from "../../services/index.js";
 
 const adminSlice = createSlice({
     name: "admin",
     initialState: {
+        token: '',
         tagList: [],
         categoryList: [],
         articleList: [],
@@ -19,8 +22,13 @@ const adminSlice = createSlice({
         page: 1,
         articleInfo: [],
         paragraphList: [],
+        imgList: [],
+        userInfo: {},
     },
     reducers: {
+        setToken: (state, action) => {
+            state.token = action.payload;
+        },
         setTagList: (state, action) => {
             state.tagList = action.payload;
         },
@@ -44,10 +52,17 @@ const adminSlice = createSlice({
         },
         setParagraphList: (state, action) => {
             state.paragraphList = action.payload;
+        },
+        setImgList: (state, action) => {
+            state.imgList = action.payload;
+        },
+        setUserInfo: (state, action) => {
+            state.userInfo = action.payload;
         }
     }
 });
 const {
+    setToken,
     setTagList,
     setArticleList,
     setCategoryList,
@@ -56,6 +71,8 @@ const {
     setPage,
     setParagraphList,
     setArticleInfo,
+    setImgList,
+    setUserInfo,
 } = adminSlice.actions;
 // const { page } = globalSlice.getInitialState();
 const fetchTagList = () => {
@@ -65,7 +82,7 @@ const fetchTagList = () => {
     };
 }
 // 获取所有文章
-const fetchArticleList = (page=1) => {
+const fetchArticleList = (page = 1) => {
     return async (dispatch) => {
         const res = await getArticles(page, 10, 'all_');
         dispatch(setArticleList(res.data.result.data));
@@ -101,7 +118,31 @@ const fetchChangelogList = () => {
     }
 }
 
+const fetchImgList = () => {
+    return async (dispatch) => {
+        const res = await getImgList();
+        dispatch(setImgList(res.data.result));
+    }
+}
+
+const fetchLogout = () => {
+    return (dispatch) => {
+        dispatch(setToken(''));
+        dispatch(setUserInfo({}));
+    }
+}
+
+const fetchUserInfo = (token) => {
+    return async (dispatch) => {
+        const res = await getUserInfo(token);
+        dispatch(setUserInfo(res.data.result));
+    }
+}
+
 const reducer = adminSlice.reducer;
 
 export default reducer;
-export { fetchTagList, fetchArticleList, fetchCategoryList, fetchChangelogList, setPage, fetchArticleInfo, fetchParagraphList }
+export { setToken, fetchTagList, fetchArticleList, fetchCategoryList, 
+    fetchChangelogList, setPage, fetchArticleInfo, fetchImgList, fetchLogout, 
+    fetchUserInfo,
+}

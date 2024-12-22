@@ -1,64 +1,36 @@
 
-import {Card, Row, Col, Typography, Image, FloatButton, Popover, Tag} from "antd";
+import {Card, Row, Col, Typography, FloatButton, Popover, Tag} from "antd";
 import {useEffect, useState} from "react";
-import {getArticleInfo, getArticleParagraphs} from "../services/index.js";
+import { getArticleInfo } from "../services/index.js";
 import {useNavigate, useParams} from "react-router-dom";
 import {HomeOutlined} from "@ant-design/icons";
-import Highlight from 'react-syntax-highlighter';
-import { idea as codeStyle } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import {formatCNDate, generatePureNumberId, getArticleCategory, getArticleTagList} from "../utils/index.js";
 import {useSelector} from "react-redux";
-
+import showdown from 'showdown';
 
 const { Title, Text, Paragraph } = Typography;
 
-// 根据传入的para.type，渲染不同的内容，以便在文章中兼容普通文本和更多样式
-const getContent = (para) => {
-    const { type } = para;
-    switch (type) {
-        case 'text':
-            return <Text>{para.content}</Text>;
-        case 'img':
-            return <Image width={600} src={`http://blog.coollt.cn/imgs/${para.content}`} alt="" />;
-        case 'code':
-            return <Highlight language={para.lang} style={codeStyle}>{para.content}</Highlight>;
-        default:
-            return <div></div>
-    }
-}
 
-// 根据type获取样式
-const getStyle = (type) => {
-    switch (type) {
-        case 'text':
-            return {
-                textAlign: 'left',
-                textIndent: '2em',
-            }
-        case 'img':
-            return {
-                textAlign: 'center',
-            }
-        default:
-            return {}
-    }
-}
+const converter = new showdown.Converter({
+    
+})
 
-
+const MarkdownToHtml = ({ markdownText }) => {
+    const htmlOutput = converter.makeHtml(markdownText);
+    return (
+        <div dangerouslySetInnerHTML={{__html: htmlOutput}}  style={{textAlign: 'left'}} />
+    );
+};
 
 
 const ArticlePage = () => {
     const [article, setArticle] = useState({});
-    const [paragraphList, setParagraphList] = useState([]);
     const { id: articleId } = useParams();
     const navigate = useNavigate();
     const { categoryList, tagList } = useSelector((state) => state.global);
     useEffect(() => {
         getArticleInfo(articleId).then((res) => {
             setArticle(res.data.result);
-        });
-        getArticleParagraphs(articleId).then((res) => {
-            setParagraphList(res.data.result);
         });
     }, []);
     return (
@@ -98,18 +70,12 @@ const ArticlePage = () => {
                             </div>
                         </div>
                         <Paragraph>
-                            <blockquote>
+                            <blockquote style={{textAlign: 'left'}}>
                                 {article.desc}
                             </blockquote>
                         </Paragraph>
-                        {
-                            paragraphList.map(para => {
-                                return (
-                                    <Paragraph
-                                        key={para?.id ?? generatePureNumberId()}
-                                        style={getStyle(para.type)}>{getContent(para)}</Paragraph>);
-                            })
-                        }
+                        
+                        <MarkdownToHtml markdownText={article.content}/>
                     </Typography>
                 </Col>
                 <Col span={4}></Col>
@@ -123,7 +89,7 @@ const ArticlePage = () => {
                     }}
                     icon={<HomeOutlined/>}
                     onClick={() => {
-                        navigate('/home');
+                        navigate(-1);
                     }}
                 />
             </Popover>

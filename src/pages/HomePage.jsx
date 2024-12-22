@@ -1,4 +1,4 @@
-import {Button, Card, Col, Pagination, Row, Tag} from "antd";
+import {Button, Card, Col, Pagination, Result, Row, Tag} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {formatCNDate, generatePureNumberId, getArticleCategory, getArticleTagList} from "../utils/index.js";
@@ -18,10 +18,11 @@ const HomePage = () => {
                             <Card style={{padding: '0', minHeight: '180px'}}>
                                 <h3 style={{textAlign: 'center', margin: '0 0 10px 0'}}>标签</h3>
                                 {
+                                    tagList && tagList.length ?
                                     tagList.map((tag) => {
                                         return <Tag key={tag?.id} color={tag?.color ?? 'default'}
                                                     style={{margin: '5px'}}>{"#" + tag.name}</Tag>
-                                    })
+                                    }) : ""
                                 }
                             </Card>
                         </Col>
@@ -31,10 +32,11 @@ const HomePage = () => {
                             <Card style={{padding: '0', minHeight: '180px'}}>
                                 <h3 style={{textAlign: 'center', margin: '0 0 10px 0'}}>分类</h3>
                                 {
+                                    categoryList && categoryList.length ?
                                     categoryList.map((category) => {
                                         return <Tag key={category?.id} color={category?.color ?? 'default'}
                                                     style={{margin: '5px'}}>{category.name}</Tag>
-                                    })
+                                    }) : ""
                                 }
                             </Card>
                         </Col>
@@ -45,6 +47,7 @@ const HomePage = () => {
                     <Row>
                         <Col span={24}>
                             {
+                                articleList && articleList.length > 0 ?
                                 articleList.map(article => {
                                     return (
                                         <Card style={{marginBottom: '10px', minHeight: '200px'}}
@@ -90,7 +93,7 @@ const HomePage = () => {
                                             </div>
 
                                         </Card>)
-                                })
+                                }) : "抱歉，暂无数据。"
                             }
                         </Col>
                     </Row>
@@ -98,7 +101,7 @@ const HomePage = () => {
                     <Row>
                         <Col span={4}></Col>
                         <Col span={16} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Pagination defaultCurrent={page} page={page} pageSize={4} total={total} onChange={(page) => { dispatch(fetchArticleList(page));dispatch(setPage(page)); }}/>
+                            {total ? <Pagination defaultCurrent={page} page={page} pageSize={4} total={total} onChange={(page) => { dispatch(fetchArticleList(page));dispatch(setPage(page));}}/>: ""}
                         </Col>
                         <Col span={4}></Col>
                     </Row>

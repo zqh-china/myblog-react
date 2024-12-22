@@ -10,6 +10,8 @@ import CategoryManage from "./pages/CategoryManage.jsx";
 import TagManage from "./pages/TagManage.jsx";
 import AttachmentManage from "./pages/AttachmentManage.jsx";
 import ArticleEdit from "./pages/ArticleEdit.jsx";
+import LoginPage from "./pages/Login.jsx";
+import ArticleAdd from "./pages/ArticleAdd.jsx";
 
 const App = () => {
     return (
@@ -27,7 +29,10 @@ const App = () => {
                     <Route path="/admin/tag" element={<TagManage/>}></Route>
                     <Route path="/admin/attachment" element={<AttachmentManage/>}></Route>
                     <Route path="/admin/article_edit/:id" element={<ArticleEdit />}></Route>
+                    <Route path="/admin/article_add" element={<ArticleAdd />}></Route>
+                    <Route path="/admin/article/:id" element={<ArticlePage />}></Route>
                 </Route>
+                <Route path="/login" element={<LoginPage/>}></Route>
 
             </Routes>
         </BrowserRouter>

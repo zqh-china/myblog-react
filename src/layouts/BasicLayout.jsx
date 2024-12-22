@@ -14,6 +14,7 @@ const logoStyle = {
     color: '#646cff',
     fontSize: '20px',
     fontWeight: 'bold',
+    cursor: 'pointer',
 }
 
 const BasicLayout = () => {
@@ -39,7 +40,7 @@ const BasicLayout = () => {
     return (
         <Layout style={{ borderRadius: 8, overflow: 'hidden', width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Header style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: '#fff' }}>
-                <div className="logo" style={logoStyle}>My Blog</div>
+                <div className="logo" style={logoStyle} onClick={() => {navigate('/login')}}>My Blog</div>
                 <Menu
                     mode="horizontal"
                     defaultSelectedKeys={['home']}
@@ -51,12 +52,7 @@ const BasicLayout = () => {
                 />
             </Header>
             <Content style={{ textAlign: 'center', minHeight: 120, lineHeight: '120px', flex: 1 }}>
-
-                        {/*<Route path={"/home"} element={<HomePage articles={articles} categories={categories} tags={tags}/>}></Route>*/}
-                        {/*<Route path={"/about"} element={<AboutPage/>}></Route>*/}
-
-                    <Outlet />
-                {/*<HomePage articles={articles} tags={tags} categories={categories} />*/}
+                <Outlet />
             </Content>
             <Footer style={{ textAlign: 'center', color: '#000', height: '68px' }}>© {new Date().getFullYear()} My Blog. All rights reserved.</Footer>
         </Layout>

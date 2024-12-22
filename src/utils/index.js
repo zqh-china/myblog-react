@@ -1,5 +1,7 @@
 import moment from 'moment';
+import { Base64 } from 'js-base64';
 
+// 格式化时间（中文）
 export const formatCNDate = (date) => {
     if (!date) return '1970年01月01日 00:00';
     return moment(date).format('YYYY年MM月DD日 HH:mm');
@@ -22,4 +24,36 @@ export const generatePureNumberId = () => {
     const timestamp = Date.now();
     const randomPart = Math.floor(Math.random() * 10000); // 生成一个较小的随机数，可调整范围
     return (timestamp + randomPart).toString().slice(-10); // 取后10位，可按需调整位数
+}
+
+// Antd 颜色
+export const antdColors = [
+    'processing',
+    'success',
+    'magenta',
+    'red',
+    'volcano',
+    'orange',
+    'gold',
+    'lime',
+    'green',
+    'cyan',
+    'blue',
+    'geekblue',
+    'purple',
+    'warning',
+    'error',
+];
+
+// 将用户名和密码保存到localStorage
+export const saveInfo2LocalStorage = (obj) => {
+    localStorage.setItem('info', Base64.encode(JSON.stringify(obj)));
+}
+
+export const loadInfoFromLocalStorage = () => {
+    try {
+        return JSON.parse(Base64.decode(localStorage.getItem('info')));
+    } catch(err) {
+        return;
+    }
 }

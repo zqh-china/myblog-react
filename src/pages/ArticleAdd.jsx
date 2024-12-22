@@ -1,68 +1,50 @@
-import {Col, FloatButton, Row, Form, Input, Select, Button, Popconfirm, message} from "antd";
-import {ArrowLeftOutlined} from "@ant-design/icons";
-import {useNavigate, useParams} from "react-router-dom";
+import {Col, Row, Form, Input, Select, Button, message} from "antd";
+import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {getArticleInfo, updateArticle} from "../services/index.js";
+import {addArticle} from "../services/index.js";
 import {useSelector} from "react-redux";
-import {getArticleTagList} from "../utils/index.js";
+import ResultPage from "./result/ResultPage.jsx";
 
 const { TextArea } = Input;
 
 
-const ArticleEdit = () => {
+const ArticleAdd = () => {
     const navigate = useNavigate();
-    const { id } = useParams();
     const [form] = Form.useForm();
     const { categoryList, tagList, token } = useSelector(state => state.admin);
-    const [articleInfo, setArticleInfo] = useState({});
     const [messageApi, contextHolder] = message.useMessage();
-    
+    const [result, setResult] = useState(0); // 0 无状态 1 成功 2 失败
+    const [resultMsg, setResultMsg] = useState('');
     const toSubmit = (values) => {
         const { tags } = values;
         values.tags = tags.join(",");
-        values.id = id;
         values.category_id = values.category;
         delete values.category;
-        updateArticle(values, token).then((res)=> {
+        setResult(true);
+        addArticle(values, token).then((res)=> {
             messageApi.open({
                 type: 'success',
-                content: res.data.message + "即将跳转管理首页...",
+                content: res.data.message,
             });
-            setTimeout(() => {
-                navigate('/admin/article');
-            }, 3000);
-            
+            setResultMsg(res.data.message);
+            setResult(1);
         }).catch(err=>{
             messageApi.open({
                 type: 'error',
                 content: err,
-            })
+            });
+            setResultMsg(err);
+            setResult(2);
         })
     }
-    useEffect(() => {
-        getArticleInfo(id).then((res) => {
-            setArticleInfo(res.data.result);
-        });
-    }, [id]);
-    useEffect(() => {
-        if (Object.keys(articleInfo).length > 0) {
-            form.setFieldsValue({
-                title: articleInfo.title,
-                category: articleInfo.category_id,
-                tags: getArticleTagList(articleInfo.tags, tagList).map(tag => tag.id),
-                publish_status: articleInfo.publish_status,
-                desc: articleInfo.desc,
-                content: articleInfo.content,
-            });
-        }
-    }, [articleInfo, form]);
     const categoryOptions = categoryList.map((category) => { return { value: category.id, label: category.name } });
-    const tagOptions = tagList.map((tag) => { return { value: tag.id, label: tag.name } });
+    const tagOptions = tagList.map((tag) => { return { value: tag.id, label: tag.name, } });
 
     return (
         <>
             {contextHolder}
-            <Row>
+            {
+                result === 0 ? <Row>
                 <Col span={24}  style={{overflowY: "scroll"}}>
 
                     <Form
@@ -119,30 +101,17 @@ const ArticleEdit = () => {
                             </Col>
                             <Col span={18}></Col>
                         </Row>
-
-
-
-
-
-
                     </Form>
                 </Col>
                 <Col span={12}></Col>
-            </Row>
-            <FloatButton
-                shape="circle"
-                type="primary"
-                style={{
-                    insetInlineEnd: 94,
-                }}
-                icon={<ArrowLeftOutlined />}
-                onClick={() => {
-                    navigate(-1);
-                }}
-            />
+            </Row> 
+            : result === 1 ? <ResultPage status="success" title="创建成功" subTitle={resultMsg}  homePath={-1} redirectPath='/admin/article_add'/> 
+            : <ResultPage status="error" title="创建失败" subTitle={resultMsg} homePath={-1} redirectPath='/admin/article_add'/>
+            }
+            
         </>
 
     );
 }
 
-export default ArticleEdit;
+export default ArticleAdd;
