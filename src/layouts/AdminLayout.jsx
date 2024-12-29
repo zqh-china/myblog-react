@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
 import {
     AppstoreOutlined,
-    BorderlessTableOutlined, 
-    FileImageOutlined, 
+    BorderlessTableOutlined, FileExclamationOutlined,
+    FileImageOutlined,
     FormOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -37,6 +37,11 @@ const menuItems = [
         icon: <FileImageOutlined />,
         label: '附件管理',
     },
+    {
+        key: 'syslogs',
+        icon: <FileExclamationOutlined />,
+        label: '系统日志'
+    }
 ];
 const { Header, Sider, Content } = Layout;
 
@@ -181,14 +186,17 @@ const AdminLayout = () => {
                         <Col span={20}></Col>
                         <Col span={1}>
                             <Popover content={<UserInfoCard info={userInfo}/>} title="">
-                                <Avatar
-                                    style={{
-                                        // backgroundColor: '#87d068',
-                                        cursor: 'pointer',
-                                    }}
-                                    src={`/imgs/${userInfo.avatar}`}
-                                    icon={<UserOutlined />}
-                                    />
+                                {
+                                    userInfo.avatar ? <Avatar
+                                        style={{
+                                            // backgroundColor: '#87d068',
+                                            cursor: 'pointer',
+                                        }}
+                                        src={`/imgs/${userInfo.avatar}`}
+                                        icon={<UserOutlined />}
+                                    /> : <Avatar icon={<UserOutlined />} />
+                                }
+
                             </Popover>
                         </Col>
                         

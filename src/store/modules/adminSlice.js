@@ -118,9 +118,9 @@ const fetchChangelogList = () => {
     }
 }
 
-const fetchImgList = () => {
+const fetchImgList = (page, pageSize, token) => {
     return async (dispatch) => {
-        const res = await getImgList();
+        const res = await getImgList(page, pageSize, token);
         dispatch(setImgList(res.data.result));
     }
 }

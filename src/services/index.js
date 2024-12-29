@@ -22,7 +22,6 @@ export const getArticles = (page, size=4, publish_status='published') => {
     return axios.get(`/api/article`, { params: { publish_status, size, page } });
 }
 
-
 export const getArticleInfo = (id) => {
     return axios.get(`/api/article/${id}`);
 }
@@ -74,13 +73,15 @@ export const deleteArticle = (id, token='') => {
     );
 }
 
-export const getImgList = () => {
-    return axios.get(`/api/upload`);
+// 图片-查删
+export const getImgList = (page=1, pageSize=10, token='') => {
+    setToken(token);
+    return axios.get(`/api/file?page=${page}&pageSize=${pageSize}`, {headers: baseHeaders});
 }
 
 export const delImg = (id, token='') => {
     setToken(token);
-    return axios.delete(`/api/upload/${id}`, {headers: baseHeaders});
+    return axios.delete(`/api/file/${id}`, {headers: baseHeaders});
 }
 
 
@@ -120,8 +121,14 @@ export const updateCategory = (categoryInfo, token='') => {
     return axios.put(`/api/category`, {...categoryInfo}, {headers: baseHeaders});
 }
 
- 
 
+// 获取系统日志
+export const getSyslogs = (page=1, pageSize=10, token='') => {
+    setToken(token);
+    return axios.get(`/api/syslogs?page=${page}&pageSize=${pageSize}`, {headers: baseHeaders});
+}
+ 
+// 登录
 export const login = ({ username, password }) => {
     return axios.post(`/api/auth/login`, { username, password })
 }

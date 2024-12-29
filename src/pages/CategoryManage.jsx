@@ -14,37 +14,10 @@ const CategoryManage = () => {
     const [addDrawerOpen, setAddDrawerOpen] = useState(false);
     const [form] = Form.useForm();
     const dispatch = useDispatch();
+
     const refreshCategoryList = () => {
         dispatch(fetchCategoryList());
     }
-    const toEdit = (id) => {
-        const categoryInfo = categoryList.find(item => item.id === id);
-        if (!categoryInfo) {
-            message.error(`分类[id=${id}]不是合法的分类`);
-            return;
-        }
-        form.setFieldsValue({
-            id: id,
-            name: categoryInfo.name,
-            desc: categoryInfo.desc,
-            color: categoryInfo.color,
-        })
-        setEditDrawerOpen(true);
-         
-    }
-    const cancel = () => { message.warning('已取消操作');}
-    const confirm = (id) => { console.log(id);toDel(id) }
-    const toDel = (id) => {
-        fetchDelCategory(id);
-    }
-    const toSubmit = (values) => {
-        if (values.id) {
-            fetchEditCategory(values);
-        } else {
-            fetchAddCategory(values);
-        }
-    }
-
     const fetchEditCategory = (values) => {
         updateCategory(values, token).then((res) => {
             if (res.data.code !== 0) {
@@ -59,7 +32,6 @@ const CategoryManage = () => {
         })
         setEditDrawerOpen(false);
     }
-
     const fetchAddCategory = (values) => {
         addCategory(values, token).then((res) => {
             if (res.data.code !== 0) {
@@ -74,7 +46,6 @@ const CategoryManage = () => {
         })
         setAddDrawerOpen(false);
     }
-
     const fetchDelCategory = (id) => {
         delCategory(id, token).then((res) => {
             if (res.data.code !== 0) {
@@ -87,8 +58,35 @@ const CategoryManage = () => {
             message.error(err.response?.data?.message);
         })
     }
-    
-    
+
+    const toEdit = (id) => {
+        const categoryInfo = categoryList.find(item => item.id === id);
+        if (!categoryInfo) {
+            message.error(`分类[id=${id}]不是合法的分类`);
+            return;
+        }
+        form.setFieldsValue({
+            id: id,
+            name: categoryInfo.name,
+            desc: categoryInfo.desc,
+            color: categoryInfo.color,
+        })
+        setEditDrawerOpen(true);
+
+    }
+    const cancel = () => { message.warning('已取消操作');}
+    const confirm = (id) => { console.log(id);toDel(id) }
+    const toDel = (id) => {
+        fetchDelCategory(id);
+    }
+    const toSubmit = (values) => {
+        if (values.id) {
+            fetchEditCategory(values);
+        } else {
+            fetchAddCategory(values);
+        }
+    }
+
     const columns = [
         {
             title: '分类名',
@@ -139,7 +137,11 @@ const CategoryManage = () => {
 
         <Row>
             <Col span={24}>
-                <Table columns={columns} dataSource={categoryList.map(item => {return { ...item, key: item.id }})}></Table>
+                <Table columns={columns} dataSource={categoryList.map(item => {return { ...item, key: item.id }})}
+                    pagination={{
+                        pageSize: 5,
+                    }}
+                ></Table>
             </Col>
         </Row>
         <Drawer title="编辑分类" onClose={() => {setEditDrawerOpen(false)}} open={editDrawerOpen}>

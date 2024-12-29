@@ -1,10 +1,7 @@
-import {Alert, Button, Col, Popconfirm, Row, Table, Tag, message, Drawer, Form, Input, Select} from "antd";
+import {Button, Col, Popconfirm, Row, Table, Tag, message, Drawer, Form, Input, Select} from "antd";
 import {useSelector} from "react-redux";
 import {PlusOutlined} from "@ant-design/icons";
-import {generatePureNumberId, getArticleCategory, getArticleTagList} from "../utils/index.js";
 import {useState} from "react";
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { addTag, delTag, updateTag } from "../services/index.js";
 import { useDispatch } from "react-redux";
 import { fetchTagList } from "../store/modules/adminSlice.js";
@@ -16,28 +13,9 @@ const TagManage = () => {
     const [addDrawerOpen, setAddDrawerOpen] = useState(false);
     const [form] = Form.useForm();
     const dispatch = useDispatch();
+
     const refreshTagList = () => {
         dispatch(fetchTagList());
-    }
-    const toEdit = (id) => {
-        const tagInfo = tagList.find(item => item.id === id);
-        if (!tagInfo) {
-            message.error(`标签[id=${id}]不是合法的标签`);
-            return;
-        }
-        form.setFieldsValue({
-            id: id,
-            name: tagInfo.name,
-            desc: tagInfo.desc,
-            color: tagInfo.color,
-        })
-        setEditDrawerOpen(true);
-         
-    }
-    const cancel = () => { message.warning('已取消操作');}
-    const confirm = (id) => { toDel(id) }
-    const toDel = (id) => {
-        fetchDelTag(id);
     }
     const fetchAddTag = (values) => {
         addTag(values, token).then((res) => {
@@ -53,7 +31,6 @@ const TagManage = () => {
         })
         setAddDrawerOpen(false);
     }
-
     const fetchEditTag = (values) => {
         updateTag(values, token).then((res) => {
             if (res.data.code !== 0) {
@@ -68,7 +45,6 @@ const TagManage = () => {
         })
         setEditDrawerOpen(false);
     }
-
     const fetchDelTag = (id) => {
         delTag(id, token).then((res) => {
             if (res.data.code !== 0) {
@@ -81,6 +57,12 @@ const TagManage = () => {
             message.error(err.response?.data?.message);
         })
     }
+
+    const cancel = () => { message.warning('已取消操作');}
+    const confirm = (id) => { toDel(id) }
+    const toDel = (id) => {
+        fetchDelTag(id);
+    }
     const toSubmit = (values) => {
         if (values.id) {
             fetchEditTag(values);
@@ -89,11 +71,27 @@ const TagManage = () => {
         }
         
     }
+    const toEdit = (id) => {
+        const tagInfo = tagList.find(item => item.id === id);
+        if (!tagInfo) {
+            message.error(`标签[id=${id}]不是合法的标签`);
+            return;
+        }
+        form.setFieldsValue({
+            id: id,
+            name: tagInfo.name,
+            desc: tagInfo.desc,
+            color: tagInfo.color,
+        })
+        setEditDrawerOpen(true);
+
+    }
+
     const columns = [
         {
             title: '标签名',
-            dataIndex: 'description',
-            key: 'description',
+            dataIndex: 'name',
+            key: 'name',
             width: 100,
             render: (_, { id, name, color }) => {
                 return <Tag color={color} key={id}>{name}</Tag>
@@ -101,10 +99,10 @@ const TagManage = () => {
         },
         {
             title: '说明',
-            dataIndex: 'description',
-            key: 'description',
+            dataIndex: 'desc',
+            key: 'desc',
             width: 180,
-            render: (_, { description }) => (<div>{description}</div>)
+            render: (_, { desc }) => (<div>{desc}</div>)
         },
         {
             title: '操作',
@@ -124,11 +122,10 @@ const TagManage = () => {
                     >
                         <Button color="danger" variant="filled" size="small"  style={{margin: '0 0 0 5px'}}>删除</Button>
                     </Popconfirm>
-                    
+
                 </>)
             },
         }
-
     ];
     return (
         <>
@@ -139,7 +136,12 @@ const TagManage = () => {
             </Row>
             <Row>
                 <Col span={24}>
-                    <Table columns={columns} dataSource={tagList.map(item => {return { ...item, key: item.id }})}></Table>
+                    <Table columns={columns} dataSource={tagList.map(item => {return { ...item, key: item.id }})}
+                           // tagList的数据其他模块也在使用，存在redux里，所以后端不做分页，只做前端分页
+                        pagination={{
+                            pageSize: 5,
+                        }}
+                    ></Table>
                 </Col>
             </Row>
             <Drawer title="编辑标签" onClose={() => {setEditDrawerOpen(false)}} open={editDrawerOpen}>

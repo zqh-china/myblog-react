@@ -16,10 +16,10 @@ const viteConfig = defineConfig({
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/api/, '')
           },
-          '/img': {
+          '/imgs': {
             target: 'http://localhost:3000',
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/img/, '')
+            rewrite: (path) => path.replace(/^\/imgs/, '')
           }
         }
       },

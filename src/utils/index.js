@@ -43,6 +43,7 @@ export const antdColors = [
     'purple',
     'warning',
     'error',
+    'default',
 ];
 
 // 将用户名和密码保存到localStorage

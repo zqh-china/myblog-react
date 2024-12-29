@@ -1,21 +1,27 @@
 import { Row, Col, Button, Table, Popconfirm, message, Popover, Image, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchImgList } from "../store/modules/adminSlice";
 import { UploadOutlined } from '@ant-design/icons';
 import { formatCNDate } from '../utils/index.js';
-import { baseUrl, imgUrl, apiUrl, delImg } from "../services/index.js";
+import { getImgList, delImg } from "../services/index.js";
 
 
 
 const AttachmentManage = () => {
-    const { imgList, token } = useSelector((state) => state.admin);
+    const { token } = useSelector((state) => state.admin);
+    const [imgList, setImgList] = useState([]);
     const dispatch = useDispatch();
-    const refreshImgList = () => {
-        dispatch(fetchImgList());
+    const fetchImageList = (page, pageSize) => {
+        getImgList(page, pageSize, token).then((res) => {
+            if (res.data.code == 0) {
+                setImgList(res.data.result);
+            } else {
+                message.error(res.data.message);
+            }
+        });
     }
     useEffect(() => {
-        refreshImgList();
+        fetchImageList(1, 10);
     }, []);
     const cancel = () => {
         message.warning("已取消操作");
@@ -23,7 +29,7 @@ const AttachmentManage = () => {
     const confirm = (id) => {
         delImg(id, token).then((res) => {
             message.success(res.data.message);
-            refreshImgList();
+            fetchImageList(1, 10);
         }).catch((err) => {
             // console.log(err.response.data.message);
             message.error(err.response?.data?.message);
@@ -31,7 +37,7 @@ const AttachmentManage = () => {
     }
     const props = {
         name: 'file',
-        action: `/api/upload/file`,
+        action: `/api/file/upload`,
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -41,7 +47,7 @@ const AttachmentManage = () => {
             }
             if (info.file.status === 'done') {
                 message.success(`${info.file.name} 文件上传成功`);
-                refreshImgList();
+                fetchImageList(1, 10);
             } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} 文件上传失败: ${info?.file?.response?.message}`);
             }
